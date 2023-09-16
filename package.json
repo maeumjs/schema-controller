@@ -28,9 +28,9 @@
     "lint": "eslint --cache .",
     "lint-staged": "lint-staged",
     "prettier": "prettier --write src/**/*.ts",
-    "pub": "npm publish --registry http://localhost:8901",
-    "unpub": "npm unpublish typescript-cli-boilerplate@$npm_package_version --registry http://localhost:8901 --force",
-    "pub:prod": "cross-env RELEASE_MODE=true npm publish",
+    "pub": "pnpm publish --registry http://localhost:8901",
+    "unpub": "pnpm unpublish @maeum/schema-controller@$npm_package_version --registry http://localhost:8901 --force",
+    "pub:prod": "cross-env RELEASE_MODE=true pnpm publish",
     "dd": "deps-diff md -d prod -d dev --title-list-type '*' --deps-list-type '*' --content-list-type '*'",
     "prepare": "husky install"
   },
