@@ -15,15 +15,22 @@ console.log(`version: ${pkg.version}`);
 console.log(`FORMAT: ${process.env.FORMAT}`);
 console.log(`MINIFY: ${process.env.FORMAT}`);
 
+console.log('external: ');
+
 await esbuild.build({
-  entryPoints: ['src/cli.ts'],
+  // entryPoints: ['src/bootstrap.ts', 'src/controller.ts'],
+  entryPoints: ['src/index.ts'],
   target: 'es2021',
-  banner: { js: '#!/usr/bin/env node\n' },
   bundle: true,
   sourcemap: true,
   platform: 'node',
+  // outdir: process.env.FORMAT === 'cjs' ? 'dist/cjs' : 'dist/esm',
   minify: process.env.MINIFY === 'true',
   outfile: process.env.FORMAT === 'cjs' ? 'dist/cjs/index.cjs' : 'dist/esm/index.mjs',
   format: process.env.FORMAT,
-  external: Object.keys(pkg.dependencies),
+  external: [
+    ...Object.keys(pkg.dependencies ?? {}),
+    ...Object.keys(pkg.devDependencies ?? {}),
+    ...Object.keys(pkg.peerDependencies ?? {}),
+  ],
 });

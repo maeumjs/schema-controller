@@ -36,5 +36,6 @@
     "watch": false
     // "onStartup": ["all-tests"],
     // "onSave": "test-src-file"
-  }
+  },
+  "markdown.extension.toc.levels": "2..6"
 }
