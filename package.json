@@ -1,6 +1,6 @@
 {
   "name": "@maeum/schema-controller",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "maeum framework schema-controller",
   "engines": {
     "node": ">=18"
@@ -55,6 +55,9 @@
       }
     }
   },
+  "files": [
+    "dist"
+  ],
   "bugs": {
     "url": "https://github.com/maeumjs/schema-controller/issues"
   },
