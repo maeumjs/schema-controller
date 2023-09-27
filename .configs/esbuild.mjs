@@ -10,27 +10,26 @@ if (process.env.FORMAT !== 'cjs' && process.env.FORMAT !== 'esm') {
   process.exit(1);
 }
 
+const external = [
+  ...Object.keys(pkg.dependencies ?? {}),
+  ...Object.keys(pkg.devDependencies ?? {}),
+  ...Object.keys(pkg.peerDependencies ?? {}),
+];
+
 console.log('esbuild start bundling');
 console.log(`version: ${pkg.version}`);
 console.log(`FORMAT: ${process.env.FORMAT}`);
 console.log(`MINIFY: ${process.env.FORMAT}`);
-
-console.log('external: ');
+console.log('external: ', external);
 
 await esbuild.build({
-  // entryPoints: ['src/bootstrap.ts', 'src/controller.ts'],
   entryPoints: ['src/index.ts'],
   target: 'es2021',
   bundle: true,
   sourcemap: true,
   platform: 'node',
-  // outdir: process.env.FORMAT === 'cjs' ? 'dist/cjs' : 'dist/esm',
   minify: process.env.MINIFY === 'true',
   outfile: process.env.FORMAT === 'cjs' ? 'dist/cjs/index.cjs' : 'dist/esm/index.mjs',
   format: process.env.FORMAT,
-  external: [
-    ...Object.keys(pkg.dependencies ?? {}),
-    ...Object.keys(pkg.devDependencies ?? {}),
-    ...Object.keys(pkg.peerDependencies ?? {}),
-  ],
+  external,
 });
