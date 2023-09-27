@@ -2,12 +2,12 @@
 
 ![ts](https://flat.badgen.net/badge/Built%20With/TypeScript/blue)
 [![Download Status](https://img.shields.io/npm/dw/@maeum/schema-controller.svg?style=flat-square)](https://npmcharts.com/compare/@maeum/schema-controller)
-[![Github Star](https://img.shields.io/github/stars/imjuni/@maeum/schema-controller.svg?style=flat-square)](https://github.com/imjuni/@maeum/schema-controller)
-[![Github Issues](https://img.shields.io/github/issues-raw/imjuni/@maeum/schema-controller.svg?style=flat-square)](https://github.com/imjuni/@maeum/schema-controller/issues)
+[![Github Star](https://img.shields.io/github/stars/maeumjs/schema-controller.svg?style=flat-square)](https://github.com/maeumjs/schema-controller)
+[![Github Issues](https://img.shields.io/github/issues-raw/maeumjs/schema-controller.svg?style=flat-square)](https://github.com/maeumjs/schema-controller/issues)
 [![NPM version](https://img.shields.io/npm/v/@maeum/schema-controller.svg?style=flat-square)](https://www.npmjs.com/package/@maeum/schema-controller)
-[![@maeum/schema-controller](https://github.com/imjuni/@maeum/schema-controller/actions/workflows/ci.yml/badge.svg?style=flat-square)](https://github.com/imjuni/@maeum/schema-controller/actions/workflows/ci.yml)
-[![License](https://img.shields.io/npm/l/@maeum/schema-controller.svg?style=flat-square)](https://github.com/imjuni/@maeum/schema-controller/blob/master/LICENSE)
-[![codecov](https://codecov.io/gh/imjuni/@maeum/schema-controller/branch/master/graph/badge.svg?token=cYJEAvZUFU)](https://codecov.io/gh/imjuni/@maeum/schema-controller)
+[![@maeum/schema-controller](https://github.com/maeumjs/schema-controller/actions/workflows/ci.yml/badge.svg?style=flat-square)](https://github.com/maeumjs/schema-controller/actions/workflows/ci.yml)
+[![License](https://img.shields.io/npm/l/@maeum/schema-controller.svg?style=flat-square)](https://github.com/maeumjs/schema-controller/blob/master/LICENSE)
+[![codecov](https://codecov.io/gh/maeumjs/schema-controller/branch/master/graph/badge.svg?token=cYJEAvZUFU)](https://codecov.io/gh/maeumjs/schema-controller)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
 The `@maeum/schema-controller` is a package that helps developer to integreate [schema-nozzle](https://github.com/imjuni/schema-nozzle) and [fastify.js](https://fastify.dev/). Developer can generate a `json-schema` via schema-nozzle and then use as a schema in fastify.js request/response.
@@ -40,11 +40,11 @@ npm install @maeum/schema-controller --save
 
 ```ts
 import fastify from 'fastify';
-import { bootstrap as schemaBootstrap, getSchemaController } from '@maeum/schema-controller';
+import { SchemaController } from '@maeum/schema-controller';
 
 const listen = () => {
   // step 01. bootstrap your json-schema database
-  schemaBootstrap({
+  SchemaController.bootstrap(false, {
     // set your json-schema database file-path
     filePath: path.join(getCwd(process.env), 'resources', 'configs', 'store.json'),
   });
@@ -52,7 +52,7 @@ const listen = () => {
   const server = fastify()
 
   // step 02. your schema controller pass to fastify.js
-  server.setSchemaController(getSchemaController(server));
+  server.setSchemaController(SchemaController.it.getFastifyController(server));
 }
 
 listen();
@@ -87,22 +87,23 @@ flowchart LR
 fastify.js uses [ajv](https://ajv.js.org/) for request data validation. If you want to change the options of the ajv instance, you can pass custom options as shown below.
 
 ```ts
-schemaBootstrap({
-    filePath: path.join(getCwd(process.env), 'resources', 'configs', 'store.json'),
-    ajv: {
-      // custom option of ajv instance
-      options: {
-        coerceTypes: 'array',
-        keywords: ['collectionFormat', 'example', 'binary'],
-        formats: {
-          binary: { type: 'string', validate: () => true },
-          byte: { type: 'string', validate: () => true },
-        },
+SchemaController.bootstrap(false, {
+  filePath: path.join(getCwd(process.env), 'resources', 'configs', 'store.json'),
+  ajv: {
+    // custom option of ajv instance
+    options: {
+      coerceTypes: 'array',
+      keywords: ['collectionFormat', 'example', 'binary'],
+      formats: {
+        binary: { type: 'string', validate: () => true },
+        byte: { type: 'string', validate: () => true },
       },
-      // extension apply on ajv
-      extension: (ajv) => ajvFormat(ajv),
     },
-  });
+    // extension apply on ajv
+    extension: (ajv) => { 
+      ajvFormat(ajv);
+    },
+});
 ```
 
 ## Relate To

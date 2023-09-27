@@ -60,16 +60,6 @@ module.exports = {
       },
     },
     {
-      files: ['logger.ts'],
-      rules: {
-        '@typescript-eslint/no-explicit-any': ['off'],
-        '@typescript-eslint/no-unsafe-argument': ['off'],
-        '@typescript-eslint/no-non-null-assertion': ['off'],
-        '@typescript-eslint/no-unsafe-call': ['off'],
-        '@typescript-eslint/no-unsafe-assignment': ['off'],
-      },
-    },
-    {
       files: ['**/__tests__/*.ts'],
       rules: {
         '@typescript-eslint/no-unsafe-assignment': ['off'],

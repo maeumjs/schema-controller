@@ -1,9 +1,9 @@
+import type ISchemaControllerBootstrapOption from '#/interfaces/ISchemaControllerBootstrapOption';
+import getCacheKey from '#/modules/getCacheKey';
 import type { RouteDefinition } from '@fastify/ajv-compiler';
 import type { Options as AjvOptions, AnySchema, AnySchemaObject } from 'ajv';
 import Ajv from 'ajv';
 import type { ValidateFunction } from 'ajv/dist/core';
-import type ISchemaControllerBootstrapOption from 'src/interfaces/ISchemaControllerBootstrapOption';
-import getCacheKey from 'src/modules/getCacheKey';
 import type { ReadonlyDeep, SetRequired } from 'type-fest';
 
 export default class AjvContainer {

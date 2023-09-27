@@ -11,7 +11,7 @@ export default interface ISchemaControllerBootstrapOption {
     options?: AjvOptions;
 
     /** ajv extension */
-    extension?: (ajv: Ajv) => void;
+    extension?: (ajv: Ajv) => unknown;
   };
 
   stringify?: {

@@ -1,9 +1,10 @@
+import type ISchemaControllerBootstrapOption from '#/interfaces/ISchemaControllerBootstrapOption';
+import type AjvContainer from '#/modules/AjvContainer';
 import type { RouteDefinition } from '@fastify/ajv-compiler';
 import type { Options as AjvOptions } from 'ajv';
 import type { Options as FJSOptions, Schema as FJSSchema } from 'fast-json-stringify';
 import fastJsonStringify from 'fast-json-stringify';
-import type ISchemaControllerBootstrapOption from 'src/interfaces/ISchemaControllerBootstrapOption';
-import type AjvContainer from 'src/modules/AjvContainer';
+import getCacheKey from './getCacheKey';
 
 export default class StringifyContainer {
   #options: ISchemaControllerBootstrapOption['stringify'];
@@ -41,7 +42,7 @@ export default class StringifyContainer {
     const schemas = rawSchemas as Record<string, FJSSchema>;
 
     option.schema = schemas;
-    option.ajv = <AjvOptions>{ ...(container.options ?? {}) };
+    option.ajv = { ...(container.options ?? {}) } as AjvOptions;
 
     const stringify = this.#options?.useNative ? JSON.stringify : fastJsonStringify(schema, option);
 
@@ -101,13 +102,30 @@ export default class StringifyContainer {
       }
 
       const metadata = rawMetadata as RouteDefinition;
+      const cacheKey = getCacheKey(metadata);
       const schema = metadata.schema as FJSSchema;
 
-      if (this.#options?.useAjv) {
-        return this.getSerializerWithValidator(metadata, schema, rawSchemas, fjsoption);
+      const cached = this.#cache[cacheKey];
+
+      if (cached != null) {
+        return cached;
       }
 
-      return this.getSerializerWithoutValidator(metadata, schema, rawSchemas, fjsoption);
+      if (this.#options?.useAjv) {
+        const serializer = this.getSerializerWithValidator(metadata, schema, rawSchemas, fjsoption);
+        this.#cache[cacheKey] = serializer;
+        return serializer;
+      }
+
+      const serializer = this.getSerializerWithoutValidator(
+        metadata,
+        schema,
+        rawSchemas,
+        fjsoption,
+      );
+
+      this.#cache[cacheKey] = serializer;
+      return serializer;
     };
   }
 }
