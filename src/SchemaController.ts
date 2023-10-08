@@ -121,6 +121,12 @@ export default class SchemaController {
     this.#stringify = stringify;
   }
 
+  getValidator<T>(id: string) {
+    const schema = this.#schema.getItemOrThrow(id);
+    const validator = this.#ajv.getCompileValidator<T>(schema);
+    return validator;
+  }
+
   getFastifyController(
     server: FastifyInstance<
       RawServerDefault,
@@ -139,7 +145,7 @@ export default class SchemaController {
         },
         compilersFactory: {
           buildValidator: this.#ajv.getOrThrow.bind(this.#ajv),
-          buildSerializer: this.#stringify.getSerializer.bind(this.#stringify),
+          buildSerializer: this.#stringify.getSerializerFunction.bind(this.#stringify),
         },
       } satisfies NonNullable<FastifyServerOptions['schemaController']>;
     })(this);

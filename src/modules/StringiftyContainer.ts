@@ -1,10 +1,10 @@
 import type ISchemaControllerBootstrapOption from '#/interfaces/ISchemaControllerBootstrapOption';
 import type AjvContainer from '#/modules/AjvContainer';
+import getCacheKey from '#/modules/getCacheKey';
 import type { RouteDefinition } from '@fastify/ajv-compiler';
 import type { Options as AjvOptions } from 'ajv';
 import type { Options as FJSOptions, Schema as FJSSchema } from 'fast-json-stringify';
 import fastJsonStringify from 'fast-json-stringify';
-import getCacheKey from './getCacheKey';
 
 export default class StringifyContainer {
   #options: ISchemaControllerBootstrapOption['stringify'];
@@ -95,7 +95,7 @@ export default class StringifyContainer {
    * factory 함수가 생성하는 내부 함수는 실제 라우트 설정에서 route metadata를 받고, 거기에 있는 schema를
    * 사용해서 fast-json-stringify 또는 stringify를 사용한다
    */
-  getSerializer(rawSchemas?: unknown) {
+  getSerializerFunction(rawSchemas?: unknown) {
     return (rawMetadata?: unknown, fjsoption?: FJSOptions) => {
       if (typeof rawMetadata === 'object' && rawMetadata == null) {
         throw new Error(`unknown schema type: ${typeof rawMetadata}`);

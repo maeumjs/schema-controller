@@ -75,22 +75,22 @@ export default class AjvContainer {
     return validator;
   }
 
-  getCompileValidator(rawMetadata: unknown): ValidateFunction {
+  getCompileValidator<T = unknown>(rawMetadata: unknown): ValidateFunction<T> {
     if (typeof rawMetadata === 'object' && rawMetadata == null) {
       throw new Error(`unknown schema type: ${typeof rawMetadata}`);
     }
 
-    const metadata = <RouteDefinition>rawMetadata;
-    const schema = <AnySchemaObject>metadata.schema;
+    const metadata = rawMetadata as RouteDefinition;
+    const schema = metadata.schema as AnySchemaObject;
 
     const cacheKey = getCacheKey(metadata);
     const cache = this.#cache[cacheKey];
 
     if (cache != null) {
-      return cache;
+      return cache as ValidateFunction<T>;
     }
 
-    const validator = this.#ajv.compile({ ...schema, $async: false });
+    const validator = this.#ajv.compile<T>({ ...schema, $async: false });
     this.#cache[cacheKey] = validator;
 
     return validator;

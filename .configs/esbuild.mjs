@@ -20,7 +20,7 @@ console.log('esbuild start bundling');
 console.log(`version: ${pkg.version}`);
 console.log(`FORMAT: ${process.env.FORMAT}`);
 console.log(`MINIFY: ${process.env.FORMAT}`);
-console.log('external: ', external);
+console.log('external: ', JSON.stringify(external));
 
 await esbuild.build({
   entryPoints: ['src/index.ts'],

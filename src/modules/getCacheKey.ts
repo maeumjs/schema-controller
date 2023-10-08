@@ -17,5 +17,5 @@ export default function getCacheKey(metadata: RouteDefinition): string {
     return (metadata.schema as { $id: string }).$id;
   }
 
-  return `${metadata.method}::${metadata.httpPart}::${metadata.url}`;
+  return `${metadata.method}::${metadata.url}`;
 }
