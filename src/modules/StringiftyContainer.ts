@@ -2,7 +2,7 @@ import type ISchemaControllerBootstrapOption from '#/interfaces/ISchemaControlle
 import type AjvContainer from '#/modules/AjvContainer';
 import getCacheKey from '#/modules/getCacheKey';
 import type { RouteDefinition } from '@fastify/ajv-compiler';
-import type { Options as AjvOptions } from 'ajv';
+import { ValidationError, type Options as AjvOptions } from 'ajv';
 import type { Options as FJSOptions, Schema as FJSSchema } from 'fast-json-stringify';
 import fastJsonStringify from 'fast-json-stringify';
 
@@ -53,7 +53,9 @@ export default class StringifyContainer {
         const result = validator(data);
 
         if (!result) {
-          throw new Error(`invalid data: ${JSON.stringify(validator.errors ?? {})}`);
+          const err = new ValidationError(validator.errors ?? []);
+          err.message = 'invalid "Reply" Model';
+          throw err;
         }
 
         return stringify(data);
