@@ -123,7 +123,12 @@ export default class SchemaController {
 
   getValidator<T>(id: string) {
     const schema = this.#schema.getItemOrThrow(id);
-    const validator = this.#ajv.getCompileValidator<T>(schema);
+    const validator = this.#ajv.getCompileValidator<T>({
+      method: '',
+      httpPart: '',
+      url: id,
+      schema,
+    });
     return validator;
   }
 
