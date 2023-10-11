@@ -80,7 +80,7 @@ devDependencies:
     specifier: ^5.8.0
     version: 5.8.0
   fastify:
-    specifier: ^4.22.2
+    specifier: ^4.23.2
     version: 4.23.2
   husky:
     specifier: ^8.0.3
@@ -958,8 +958,8 @@ packages:
     resolution: {integrity: sha512-J8TOSBq3SoZbDhM9+R/u77hP93gz/rajSA+K2kGyijPpORPWUXHUpTaleoj+92As0S9uPRP7Oi8IqMf0u+ro6A==}
     dev: true
 
-  /@fastify/error@3.3.0:
-    resolution: {integrity: sha512-dj7vjIn1Ar8sVXj2yAXiMNCJDmS9MQ9XMlIecX2dIzzhjSHCyKo4DdXjXMs7wKW2kj6yvVRSpuQjOZ3YLrh56w==}
+  /@fastify/error@3.4.0:
+    resolution: {integrity: sha512-e/mafFwbK3MNqxUcFBLgHhgxsF8UT1m8aj0dAlqEa2nJEgPsRtpHTZ3ObgrgkZ2M1eJHPTwgyUl/tXkvabsZdQ==}
     dev: true
 
   /@fastify/fast-json-stringify-compiler@4.3.0:
@@ -3171,7 +3171,7 @@ packages:
     resolution: {integrity: sha512-WFSxsHES115svC7NrerNqZwwM0UOxbC/P6toT9LRHgAAFvG7o2AN5W+H4ihCtOGuYXjZf4z+2jXC89rVEoPWOA==}
     dependencies:
       '@fastify/ajv-compiler': 3.5.0
-      '@fastify/error': 3.3.0
+      '@fastify/error': 3.4.0
       '@fastify/fast-json-stringify-compiler': 4.3.0
       abstract-logging: 2.0.1
       avvio: 8.2.1
