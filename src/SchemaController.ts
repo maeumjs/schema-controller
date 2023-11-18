@@ -1,8 +1,8 @@
-import type ISchemaControllerBootstrapOption from '#/interfaces/ISchemaControllerBootstrapOption';
-import type ISchemaDatabaseItem from '#/interfaces/ISchemaDatabaseItem';
-import AjvContainer from '#/modules/AjvContainer';
-import SchemaContainer from '#/modules/SchemaContainer';
-import StringifyContainer from '#/modules/StringiftyContainer';
+import type { ISchemaControllerBootstrapOption } from '#/interfaces/ISchemaControllerBootstrapOption';
+import type { ISchemaDatabaseItem } from '#/interfaces/ISchemaDatabaseItem';
+import { AjvContainer } from '#/modules/AjvContainer';
+import { SchemaContainer } from '#/modules/SchemaContainer';
+import { StringifyContainer } from '#/modules/StringiftyContainer';
 import type { AnySchemaObject } from 'ajv';
 import type {
   FastifyInstance,
@@ -15,7 +15,7 @@ import { parse } from 'jsonc-parser';
 import fs from 'node:fs';
 import path from 'node:path';
 
-export default class SchemaController {
+export class SchemaController {
   static #it: SchemaController;
 
   public static get it(): SchemaController {

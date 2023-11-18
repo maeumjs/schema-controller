@@ -2,7 +2,7 @@ import type Ajv from 'ajv';
 import type { Options as AjvOptions } from 'ajv';
 import type { Options as FJSOptions } from 'fast-json-stringify';
 
-export default interface ISchemaControllerBootstrapOption {
+export interface ISchemaControllerBootstrapOption {
   /** json-schema database file path */
   filePath: string;
 

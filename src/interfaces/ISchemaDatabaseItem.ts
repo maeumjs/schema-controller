@@ -1,6 +1,6 @@
 import type { AnySchemaObject } from 'ajv';
 
-export default interface ISchemaDatabaseItem {
+export interface ISchemaDatabaseItem {
   id: string;
   filePath?: string;
   dependency: {
