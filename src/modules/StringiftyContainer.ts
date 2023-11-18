@@ -1,6 +1,6 @@
-import type ISchemaControllerBootstrapOption from '#/interfaces/ISchemaControllerBootstrapOption';
-import type AjvContainer from '#/modules/AjvContainer';
-import getCacheKey from '#/modules/getCacheKey';
+import type { ISchemaControllerBootstrapOption } from '#/interfaces/ISchemaControllerBootstrapOption';
+import type { AjvContainer } from '#/modules/AjvContainer';
+import { getCacheKey } from '#/modules/getCacheKey';
 import type { RouteDefinition } from '@fastify/ajv-compiler';
 import { type Options as AjvOptions } from 'ajv';
 import type { Options as FJSOptions, Schema as FJSSchema } from 'fast-json-stringify';
@@ -8,7 +8,7 @@ import fastJsonStringify from 'fast-json-stringify';
 import { errorCodes } from 'fastify';
 import type { FastifySchemaValidationError } from 'fastify/types/schema';
 
-export default class StringifyContainer {
+export class StringifyContainer {
   #options: ISchemaControllerBootstrapOption['stringify'];
 
   #cache: Record<string, (data: unknown) => string>;

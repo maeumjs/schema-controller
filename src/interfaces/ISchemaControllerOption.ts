@@ -5,7 +5,7 @@ import type {
   RawServerDefault,
 } from 'fastify';
 
-export default interface ISchemaControllerOption {
+export interface ISchemaControllerOption {
   server: FastifyInstance<
     RawServerDefault,
     RawRequestDefaultExpression<RawServerDefault>,

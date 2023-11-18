@@ -1,6 +1,6 @@
 import type { RouteDefinition } from '@fastify/ajv-compiler';
 
-export default function getCacheKey(metadata: RouteDefinition): string {
+export function getCacheKey(metadata: RouteDefinition): string {
   if (
     typeof metadata.schema === 'object' &&
     metadata.schema != null &&

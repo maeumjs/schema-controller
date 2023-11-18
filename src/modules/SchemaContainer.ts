@@ -1,9 +1,9 @@
-import type ISchemaDatabaseItem from '#/interfaces/ISchemaDatabaseItem';
+import type { ISchemaDatabaseItem } from '#/interfaces/ISchemaDatabaseItem';
 import type { AnySchemaObject } from 'ajv';
 import { parse } from 'jsonc-parser';
 import type { ReadonlyDeep } from 'type-fest';
 
-export default class SchemaContainer {
+export class SchemaContainer {
   public static isSchemaDatabaseItem(
     value: ISchemaDatabaseItem | AnySchemaObject,
   ): value is ISchemaDatabaseItem {
