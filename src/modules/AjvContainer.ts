@@ -1,4 +1,5 @@
 import type { ISchemaControllerBootstrapOption } from '#/interfaces/ISchemaControllerBootstrapOption';
+import type { ISchemaDatabaseItem } from '#/interfaces/ISchemaDatabaseItem';
 import { getCacheKey } from '#/modules/getCacheKey';
 import type { RouteDefinition } from '@fastify/ajv-compiler';
 import type { Options as AjvOptions, AnySchema, AnySchemaObject } from 'ajv';
@@ -81,7 +82,7 @@ export class AjvContainer {
     }
 
     const metadata = rawMetadata as RouteDefinition;
-    const schema = metadata.schema as AnySchemaObject;
+    const schema = metadata.schema as ISchemaDatabaseItem;
 
     const cacheKey = getCacheKey(metadata);
     const cache = this.#cache[cacheKey];
@@ -90,7 +91,7 @@ export class AjvContainer {
       return cache as ValidateFunction<T>;
     }
 
-    const validator = this.#ajv.compile<T>({ ...schema, $async: false });
+    const validator = this.#ajv.compile<T>({ ...schema.schema, $async: false });
     this.#cache[cacheKey] = validator;
 
     return validator;
