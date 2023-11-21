@@ -121,6 +121,18 @@ export class SchemaController {
     this.#stringify = stringify;
   }
 
+  get schema(): Readonly<SchemaContainer> {
+    return this.#schema;
+  }
+
+  get ajv(): Readonly<AjvContainer> {
+    return this.#ajv;
+  }
+
+  get stringify(): Readonly<StringifyContainer> {
+    return this.#stringify;
+  }
+
   getValidator<T>(id: string) {
     const schema = this.#schema.getItemOrThrow(id);
     const validator = this.#ajv.getCompileValidator<T>({

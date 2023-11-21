@@ -36,6 +36,9 @@
   },
   "keywords": [
     "maeum",
+    "jsonschema",
+    "json-schema",
+    "validation",
     "schema",
     "schema-controller"
   ],
