@@ -91,7 +91,7 @@ export class AjvContainer {
       return cache as ValidateFunction<T>;
     }
 
-    const validator = this.#ajv.compile<T>({ ...schema.schema, $async: false });
+    const validator = this.#ajv.compile<T>({ ...schema, $async: false });
     this.#cache[cacheKey] = validator;
 
     return validator;
