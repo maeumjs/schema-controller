@@ -68,7 +68,9 @@ export class SchemaController {
 
     const ajv = new AjvContainer();
     ajv.reload(option);
-    ajv.setSchemas(Object.values(schema.getItems()).map((item) => item.schema));
+    ajv.setSchemas(
+      (Object.values(schema.getItems()) as ISchemaDatabaseItem[]).map((item) => item.schema),
+    );
 
     const stringify = new StringifyContainer();
     stringify.reload(option);
