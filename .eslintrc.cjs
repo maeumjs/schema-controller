@@ -112,6 +112,13 @@ module.exports = {
       },
     },
     {
+      files: ['**/CE_*.ts'],
+      rules: {
+        '@typescript-eslint/no-redeclare': ['off'],
+        '@typescript-eslint/naming-convention': ['off'],
+      },
+    },
+    {
       files: ['**/__tests__/*.ts'],
       rules: {
         '@typescript-eslint/no-unsafe-assignment': ['off'],

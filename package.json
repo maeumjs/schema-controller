@@ -5,6 +5,7 @@
   "engines": {
     "node": ">=18"
   },
+  "packageManager": "pnpm@9.1.0",
   "scripts": {
     "clean": "rimraf dist",
     "ctix": "ctix build --config .configs/.ctirc",
@@ -23,7 +24,8 @@
     "lint": "eslint --cache .",
     "lint-staged": "lint-staged",
     "prettier": "prettier --write src/**/*.ts",
-    "pub": "pnpm run bundle && cross-env RELEASE_MODE=true pnpm publish --registry http://localhost:8901",
+    "prepub": "run-s unpub bundle",
+    "pub": "cross-env RELEASE_MODE=true pnpm publish --registry http://localhost:8901",
     "unpub": "pnpm unpublish $npm_package_name@$npm_package_version --registry http://localhost:8901 --force",
     "pub:prod": "pnpm run bundle && cross-env RELEASE_MODE=true pnpm publish --access=public",
     "dd": "deps-diff md -d prod -d dev --title-list-type 'm' --deps-list-type 'm' --content-list-type 'm'",
@@ -77,7 +79,6 @@
     "ajv": "^8.12.0",
     "cross-env": "^7.0.3",
     "ctix": "^2.3.0",
-    "deps-diff": "^1.0.2",
     "esbuild": "0.19.11",
     "eslint": "^8.56.0",
     "eslint-config-airbnb-base": "^15.0.0",
@@ -108,7 +109,10 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
+    "@maeum/tools": "^1.5.0",
     "jsonc-parser": "^3.2.0",
+    "lokijs": "^1.5.12",
+    "my-node-fp": "^0.10.3",
     "type-fest": "^4.9.0"
   },
   "lint-staged": {

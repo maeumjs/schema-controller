@@ -1,27 +1,11 @@
-import type Ajv from 'ajv';
-import type { Options as AjvOptions } from 'ajv';
-import type { Options as FJSOptions } from 'fast-json-stringify';
+import type { IAjvContainerOption } from '#/interfaces/IAjvContainerOption';
+import type { IStringifyContainerOption } from '#/interfaces/IStringifyContainerOption';
 
 export interface ISchemaControllerBootstrapOption {
   /** json-schema database file path */
   filePath: string;
 
-  ajv?: {
-    /** ajv option */
-    options?: AjvOptions;
+  ajv?: IAjvContainerOption;
 
-    /** ajv extension */
-    extension?: (ajv: Ajv) => unknown;
-  };
-
-  stringify?: {
-    /** fast-json-stringify option */
-    option?: FJSOptions;
-
-    /** ajv(json-schema) validation apply on response data */
-    useAjv?: boolean;
-
-    /** use stringify function instead of fast-json-stringify  */
-    useNative?: boolean;
-  };
+  stringify?: IStringifyContainerOption;
 }
