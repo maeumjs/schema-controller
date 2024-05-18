@@ -1,8 +1,5 @@
-import type { ISchemaControllerBootstrapOption } from '#/interfaces/ISchemaControllerBootstrapOption';
-import type { ISchemaDatabaseItem } from '#/interfaces/ISchemaDatabaseItem';
-import { AjvContainer } from '#/modules/AjvContainer';
-import { SchemaContainer } from '#/modules/SchemaContainer';
-import { StringifyContainer } from '#/modules/StringiftyContainer';
+import type { AjvContainer } from '#/modules/AjvContainer';
+import type { StringifyContainer } from '#/modules/StringiftyContainer';
 import type { AnySchemaObject } from 'ajv';
 import type {
   FastifyInstance,
@@ -11,17 +8,8 @@ import type {
   RawRequestDefaultExpression,
   RawServerDefault,
 } from 'fastify';
-import { parse } from 'jsonc-parser';
-import fs from 'node:fs';
-import path from 'node:path';
 
 export class SchemaController {
-  static #it: SchemaController;
-
-  public static get it(): SchemaController {
-    return SchemaController.#it;
-  }
-
   static createAddSchemaFunction(
     controller: SchemaController,
     server: FastifyInstance<
@@ -37,7 +25,7 @@ export class SchemaController {
       RawRequestDefaultExpression<RawServerDefault>,
       RawReplyDefaultExpression<RawServerDefault>
     > => {
-      controller.#schema.setItem(schema);
+      controller.#ajv.addSchema(schema);
       return server;
     };
 
@@ -45,8 +33,8 @@ export class SchemaController {
   }
 
   static createGetSchemaFunction(controller: SchemaController) {
-    const getSchema = (schemaId: string) => {
-      return controller.#schema.getSchemaOrThrow(schemaId);
+    const getSchema = (id: string) => {
+      return controller.#ajv.getSchemaOrThrow(id);
     };
 
     return getSchema;
@@ -54,77 +42,19 @@ export class SchemaController {
 
   static createGetSchemasFunction(controller: SchemaController) {
     const getSchemas = () => {
-      return controller.#schema.getSchemas();
+      return controller.#ajv.getSchemas();
     };
 
     return getSchemas;
   }
 
-  public static getControllers(buf: Buffer, option: ISchemaControllerBootstrapOption) {
-    const parsed = parse(buf.toString()) as Record<string, ISchemaDatabaseItem>;
-
-    const schema = new SchemaContainer();
-    schema.setItems(Object.values(parsed));
-
-    const ajv = new AjvContainer();
-    ajv.reload(option);
-    ajv.setSchemas(
-      (Object.values(schema.getItems()) as ISchemaDatabaseItem[]).map((item) => item.schema),
-    );
-
-    const stringify = new StringifyContainer();
-    stringify.reload(option);
-    stringify.setAjv(ajv);
-
-    return { schema, ajv, stringify };
-  }
-
-  public static bootstrap<T extends boolean>(
-    async: T,
-    option: ISchemaControllerBootstrapOption,
-  ): T extends true ? Promise<ISchemaControllerBootstrapOption> : ISchemaControllerBootstrapOption;
-  public static bootstrap<T extends boolean>(
-    async: T,
-    option: ISchemaControllerBootstrapOption,
-  ): Promise<ISchemaControllerBootstrapOption> | ISchemaControllerBootstrapOption {
-    if (async) {
-      return (async () => {
-        const filePath = path.resolve(option.filePath);
-
-        // Read JSON Schema file
-        const jsonSchemaBuf = await fs.promises.readFile(filePath);
-        const { schema, ajv, stringify } = SchemaController.getControllers(jsonSchemaBuf, option);
-
-        SchemaController.#it = new SchemaController(schema, ajv, stringify);
-
-        return option;
-      })();
-    }
-    const filePath = path.resolve(option.filePath);
-
-    // Read JSON Schema file
-    const jsonSchemaBuf = fs.readFileSync(filePath);
-    const { schema, ajv, stringify } = SchemaController.getControllers(jsonSchemaBuf, option);
-
-    SchemaController.#it = new SchemaController(schema, ajv, stringify);
-
-    return option;
-  }
-
-  #schema: SchemaContainer;
-
   #ajv: AjvContainer;
 
   #stringify: StringifyContainer;
 
-  constructor(schema: SchemaContainer, ajv: AjvContainer, stringify: StringifyContainer) {
-    this.#schema = schema;
+  constructor(ajv: AjvContainer, stringify: StringifyContainer) {
     this.#ajv = ajv;
     this.#stringify = stringify;
-  }
-
-  get schema(): Readonly<SchemaContainer> {
-    return this.#schema;
   }
 
   get ajv(): Readonly<AjvContainer> {
@@ -136,14 +66,7 @@ export class SchemaController {
   }
 
   getValidator<T>(id: string) {
-    const schema = this.#schema.getItemOrThrow(id);
-    const validator = this.#ajv.getCompileValidator<T>({
-      method: '',
-      httpPart: '',
-      url: id,
-      schema,
-    });
-    return validator;
+    return this.#ajv.getValidator<T>(id);
   }
 
   getFastifyController(

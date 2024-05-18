@@ -1,7 +1,9 @@
-import type { ISchemaControllerBootstrapOption } from '#/interfaces/ISchemaControllerBootstrapOption';
+import type { IStringifyContainerOption } from '#/interfaces/IStringifyContainerOption';
 import type { AjvContainer } from '#/modules/AjvContainer';
 import { getCacheKey } from '#/modules/getCacheKey';
+import { $YMBOL_KEY_AJV_CONTAINER } from '#/symbols/SYMBOL_KEY_AJV_CONTAINER';
 import type { RouteDefinition } from '@fastify/ajv-compiler';
+import { getValidationErrorMessage, type IClassContainer } from '@maeum/tools';
 import { type Options as AjvOptions } from 'ajv';
 import type { Options as FJSOptions, Schema as FJSSchema } from 'fast-json-stringify';
 import fastJsonStringify from 'fast-json-stringify';
@@ -9,23 +11,16 @@ import { errorCodes } from 'fastify';
 import type { FastifySchemaValidationError } from 'fastify/types/schema';
 
 export class StringifyContainer {
-  #options: ISchemaControllerBootstrapOption['stringify'];
+  #options: IStringifyContainerOption;
 
   #cache: Record<string, (data: unknown) => string>;
 
-  #ajv?: AjvContainer;
+  #container: IClassContainer;
 
-  constructor() {
-    this.#options = undefined;
+  constructor(container: IClassContainer, options?: IStringifyContainerOption) {
+    this.#options = options ?? {};
     this.#cache = {};
-  }
-
-  reload(options: Pick<ISchemaControllerBootstrapOption, 'stringify'>) {
-    this.#options = options.stringify;
-  }
-
-  setAjv(ajv: AjvContainer) {
-    this.#ajv = ajv;
+    this.#container = container;
   }
 
   getSerializerWithValidator(
@@ -34,21 +29,16 @@ export class StringifyContainer {
     rawSchemas?: unknown,
     fjsoption?: FJSOptions,
   ) {
-    const container = this.#ajv;
-
-    if (container == null) {
-      throw new Error('ajv container mandatory value');
-    }
-
+    const ajv = this.#container.resolve<AjvContainer>($YMBOL_KEY_AJV_CONTAINER);
     const option = fjsoption ?? {};
     const schemas = rawSchemas as Record<string, FJSSchema>;
 
     option.schema = schemas;
-    option.ajv = { ...(container.options ?? {}) } as AjvOptions;
+    option.ajv = { ...ajv.options } as AjvOptions;
 
     const stringify = this.#options?.useNative ? JSON.stringify : fastJsonStringify(schema, option);
 
-    const validator = this.#ajv?.getCompileValidator(metadata);
+    const validator = ajv?.getFastifyRouteValidator(metadata);
 
     if (validator != null) {
       return (data: unknown) => {
@@ -57,7 +47,11 @@ export class StringifyContainer {
         if (!result) {
           const err = errorCodes.FST_ERR_VALIDATION(
             '[FST_ERR_VALIDATION]',
-            'invalid "Reply" Model',
+            this.#options.detailError && validator.errors != null
+              ? `invalid "Reply" Model\n${Object.values(getValidationErrorMessage(validator.errors))
+                  .map((message) => `${message.instancePath} - ${message.message}`)
+                  .join('\n\n')}`
+              : 'invalid "Reply" Model',
           );
 
           err.statusCode = 500;
@@ -81,17 +75,12 @@ export class StringifyContainer {
     rawSchemas?: unknown,
     fjsoption?: FJSOptions,
   ) {
-    const container = this.#ajv;
-
-    if (container == null) {
-      throw new Error('ajv container mandatory value');
-    }
-
+    const ajv = this.#container.resolve<AjvContainer>($YMBOL_KEY_AJV_CONTAINER);
     const option = fjsoption ?? {};
     const schemas = rawSchemas as Record<string, FJSSchema>;
 
     option.schema = schemas;
-    option.ajv = { ...(container.options ?? {}) } as AjvOptions;
+    option.ajv = { ...ajv.options } as AjvOptions;
 
     const stringify = this.#options?.useNative ? JSON.stringify : fastJsonStringify(schema, option);
 
