@@ -1,12 +1,25 @@
+import { CE_SCHEMA_ID_GENERATION_STYLE } from '#/const-enum/CE_SCHEMA_ID_GENERATION_STYLE';
 import type { IAjvContainerOption } from '#/interfaces/IAjvContainerOption';
 import { getCacheKey } from '#/modules/getCacheKey';
+import { CE_SYMBOL } from '#/symbols/CE_SYMBOL';
 import type { RouteDefinition } from '@fastify/ajv-compiler';
+import type { IClassContainer } from '@maeum/tools';
 import type { Options as AjvOptions, AnySchema, AnySchemaObject } from 'ajv';
 import Ajv from 'ajv';
 import type { ValidateFunction } from 'ajv/dist/core';
 import type { ReadonlyDeep, SetRequired } from 'type-fest';
 
 export class AjvContainer {
+  static create(
+    container: IClassContainer,
+    style: CE_SCHEMA_ID_GENERATION_STYLE,
+    options: ConstructorParameters<typeof AjvContainer>[1],
+  ) {
+    const ajv = new AjvContainer(style, options);
+    container.register(CE_SYMBOL.AJV, ajv);
+    return ajv;
+  }
+
   #ajv: Ajv;
 
   #schemaMap: Map<string, AnySchemaObject>;
@@ -15,11 +28,17 @@ export class AjvContainer {
 
   #options?: AjvOptions;
 
-  constructor(options?: IAjvContainerOption) {
+  #style: CE_SCHEMA_ID_GENERATION_STYLE;
+
+  #applicationUrl: string;
+
+  constructor(style: CE_SCHEMA_ID_GENERATION_STYLE, options?: IAjvContainerOption) {
     this.#ajv = options?.options != null ? new Ajv(options?.options) : new Ajv();
     this.#options = options?.options;
+    this.#style = style;
     this.#cache = new Map<string, ValidateFunction>();
     this.#schemaMap = new Map<string, AnySchemaObject>();
+    this.#applicationUrl = options?.applictionUrl ?? 'http://plz-set-app-url.com';
 
     options?.extension?.(this.#ajv);
   }
@@ -70,8 +89,10 @@ export class AjvContainer {
     return validator;
   }
 
-  addSchemaWithoutId(schema: AnySchemaObject) {
-    this.#ajv.addSchema(schema);
+  initSchema(schema: AnySchemaObject) {
+    const $id = schema.$id ?? schema.id ?? this.#applicationUrl;
+    this.#ajv.addSchema({ ...schema, $id, id: undefined });
+    this.#schemaMap.set($id, schema);
   }
 
   addSchema(schema: AnySchemaObject) {
@@ -96,6 +117,14 @@ export class AjvContainer {
     if (invalidSchemas.length > 0) {
       throw new Error(`invalid schema id: ${invalidSchemas.length}`);
     }
+
+    schemas.forEach((schema) => {
+      if (schema.$id != null) {
+        this.#schemaMap.set(schema.$id, schema);
+      } else if (schema.id != null) {
+        this.#schemaMap.set(schema.id, schema);
+      }
+    });
 
     this.#ajv.addSchema(schemas);
 
@@ -144,6 +173,25 @@ export class AjvContainer {
     return false;
   }
 
+  styledCompile<T>(cacheKey: string, schema: AnySchemaObject) {
+    if (
+      this.#style === CE_SCHEMA_ID_GENERATION_STYLE.DEFINITIONS ||
+      this.#style === CE_SCHEMA_ID_GENERATION_STYLE.DEFINITIONS_WITH_PATH
+    ) {
+      if (schema.$id == null) {
+        const nextSchema = { ...schema, $id: `#/$defs/${cacheKey}`, $async: false };
+        const validator = this.#ajv.compile<T>(nextSchema);
+        return validator;
+      }
+
+      const validator = this.#ajv.compile<T>({ ...schema, $async: false });
+      return validator;
+    }
+
+    const validator = this.#ajv.compile<T>({ ...schema, $async: false });
+    return validator;
+  }
+
   getRefsOnlySchema<T>(schema: unknown): ValidateFunction<T> | undefined {
     if (!this.isRefsOnlySchema(schema)) {
       return undefined;
@@ -168,17 +216,15 @@ export class AjvContainer {
       return cache as ValidateFunction<T>;
     }
 
-    const { schema: metadataSchema } = metadata;
-    const refsValidator = this.getRefsOnlySchema<T>(metadataSchema);
+    const { schema } = metadata;
+    const refsValidator = this.getRefsOnlySchema<T>(schema);
 
     if (refsValidator != null) {
       this.#cache.set(cacheKey, refsValidator);
       return refsValidator;
     }
 
-    const schema = metadata.schema as AnySchemaObject;
-
-    const validator = this.#ajv.compile<T>({ ...schema, $async: false });
+    const validator = this.styledCompile<T>(cacheKey, schema as AnySchemaObject);
     this.#cache.set(cacheKey, validator);
 
     return validator;
