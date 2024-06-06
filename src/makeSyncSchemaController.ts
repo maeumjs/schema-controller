@@ -1,9 +1,9 @@
 import { SchemaController } from '#/SchemaController';
 import { CE_SCHEMA_ID_GENERATION_STYLE } from '#/const-enum/CE_SCHEMA_ID_GENERATION_STYLE';
 import type { ISchemaControllerBootstrapOption } from '#/interfaces/ISchemaControllerBootstrapOption';
-import { makeAjvContainer } from '#/modules/makeAjvContainer';
-import { makeStringifyContainer } from '#/modules/makeStringifyContainer';
-import { $YMBOL_KEY_SCHEMA_CONTROLLER } from '#/symbols/SYMBOL_KEY_SCHEMA_CONTROLLER';
+import { AjvContainer } from '#/modules/AjvContainer';
+import { StringifyContainer } from '#/modules/StringiftyContainer';
+import { CE_SYMBOL } from '#/symbols/CE_SYMBOL';
 import type { IClassContainer } from '@maeum/tools';
 import type { AnySchemaObject } from 'ajv';
 import { parse } from 'jsonc-parser';
@@ -13,13 +13,13 @@ export function makeSyncSchemaController(
   container: IClassContainer,
   option: ISchemaControllerBootstrapOption,
 ) {
-  const ajv = makeAjvContainer(container, option.ajv);
-  const stringify = makeStringifyContainer(container, option.stringify);
-
   const buf = fs.readFileSync(option.filePath);
   const schemFile = parse(buf.toString()) as {
     $store: { style: CE_SCHEMA_ID_GENERATION_STYLE; store: Record<string, unknown> };
   };
+
+  const ajv = AjvContainer.create(container, schemFile.$store.style, option.ajv);
+  const stringify = StringifyContainer.create(container, option.stringify);
 
   if (
     schemFile.$store.style === CE_SCHEMA_ID_GENERATION_STYLE.ID ||
@@ -27,11 +27,11 @@ export function makeSyncSchemaController(
   ) {
     ajv.addSchemas(Object.values(schemFile.$store.store as Record<string, AnySchemaObject>));
   } else {
-    ajv.addSchemaWithoutId(schemFile.$store.store as AnySchemaObject);
+    ajv.initSchema(schemFile.$store.store as AnySchemaObject);
   }
 
   const schemaController = new SchemaController(ajv, stringify);
-  container.register($YMBOL_KEY_SCHEMA_CONTROLLER, schemaController);
+  container.register(CE_SYMBOL.SCHEMA, schemaController);
 
   return schemaController;
 }

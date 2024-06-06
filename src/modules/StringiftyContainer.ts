@@ -1,7 +1,7 @@
 import type { IStringifyContainerOption } from '#/interfaces/IStringifyContainerOption';
 import type { AjvContainer } from '#/modules/AjvContainer';
 import { getCacheKey } from '#/modules/getCacheKey';
-import { $YMBOL_KEY_AJV_CONTAINER } from '#/symbols/SYMBOL_KEY_AJV_CONTAINER';
+import { CE_SYMBOL } from '#/symbols/CE_SYMBOL';
 import type { RouteDefinition } from '@fastify/ajv-compiler';
 import { getValidationErrorMessage, type IClassContainer } from '@maeum/tools';
 import { type Options as AjvOptions } from 'ajv';
@@ -11,6 +11,15 @@ import { errorCodes } from 'fastify';
 import type { FastifySchemaValidationError } from 'fastify/types/schema';
 
 export class StringifyContainer {
+  static create(
+    container: IClassContainer,
+    options: ConstructorParameters<typeof StringifyContainer>[1],
+  ) {
+    const stringifyContainer = new StringifyContainer(container, options);
+    container.register(CE_SYMBOL.STRINGIFY, stringifyContainer);
+    return stringifyContainer;
+  }
+
   #options: IStringifyContainerOption;
 
   #cache: Record<string, (data: unknown) => string>;
@@ -29,7 +38,7 @@ export class StringifyContainer {
     rawSchemas?: unknown,
     fjsoption?: FJSOptions,
   ) {
-    const ajv = this.#container.resolve<AjvContainer>($YMBOL_KEY_AJV_CONTAINER);
+    const ajv = this.#container.resolve<AjvContainer>(CE_SYMBOL.AJV);
     const option = fjsoption ?? {};
     const schemas = rawSchemas as Record<string, FJSSchema>;
 
@@ -75,7 +84,7 @@ export class StringifyContainer {
     rawSchemas?: unknown,
     fjsoption?: FJSOptions,
   ) {
-    const ajv = this.#container.resolve<AjvContainer>($YMBOL_KEY_AJV_CONTAINER);
+    const ajv = this.#container.resolve(CE_SYMBOL.AJV);
     const option = fjsoption ?? {};
     const schemas = rawSchemas as Record<string, FJSSchema>;
 
