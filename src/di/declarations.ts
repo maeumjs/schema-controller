@@ -1,3 +1,5 @@
+/** @ctix-declaration */
+
 import type { SchemaController } from '#/SchemaController';
 import type { CE_DI } from '#/di/CE_DI';
 import type { AjvContainer } from '#/modules/AjvContainer';
