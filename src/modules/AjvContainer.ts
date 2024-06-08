@@ -1,25 +1,13 @@
 import { CE_SCHEMA_ID_GENERATION_STYLE } from '#/const-enum/CE_SCHEMA_ID_GENERATION_STYLE';
 import type { IAjvContainerOption } from '#/interfaces/IAjvContainerOption';
 import { getCacheKey } from '#/modules/getCacheKey';
-import { CE_SYMBOL } from '#/symbols/CE_SYMBOL';
 import type { RouteDefinition } from '@fastify/ajv-compiler';
-import type { IClassContainer } from '@maeum/tools';
 import type { Options as AjvOptions, AnySchema, AnySchemaObject } from 'ajv';
 import Ajv from 'ajv';
 import type { ValidateFunction } from 'ajv/dist/core';
 import type { ReadonlyDeep, SetRequired } from 'type-fest';
 
 export class AjvContainer {
-  static create(
-    container: IClassContainer,
-    style: CE_SCHEMA_ID_GENERATION_STYLE,
-    options: ConstructorParameters<typeof AjvContainer>[1],
-  ) {
-    const ajv = new AjvContainer(style, options);
-    container.register(CE_SYMBOL.AJV, ajv);
-    return ajv;
-  }
-
   #ajv: Ajv;
 
   #schemaMap: Map<string, AnySchemaObject>;

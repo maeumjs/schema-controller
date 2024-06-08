@@ -115,6 +115,7 @@ module.exports = {
       files: ['**/CE_*.ts'],
       rules: {
         '@typescript-eslint/no-redeclare': ['off'],
+        'no-restricted-syntax': ['off'],
         '@typescript-eslint/naming-convention': ['off'],
       },
     },
