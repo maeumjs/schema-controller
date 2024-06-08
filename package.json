@@ -36,14 +36,7 @@
     "type": "git",
     "url": "git+https://github.com/maeumjs/schema-controller.git"
   },
-  "keywords": [
-    "maeum",
-    "jsonschema",
-    "json-schema",
-    "validation",
-    "schema",
-    "schema-controller"
-  ],
+  "keywords": ["maeum", "jsonschema", "json-schema", "validation", "schema", "schema-controller"],
   "author": "ByungJoon Lee",
   "license": "MIT",
   "main": "dist/cjs/index.cjs",
@@ -52,18 +45,18 @@
   "exports": {
     ".": {
       "require": {
+        "require": "./dist/cjs/index.cjs",
         "default": "./dist/cjs/index.cjs",
         "types": "./dist/types/index.d.ts"
       },
       "import": {
+        "import": "./dist/esm/index.mjs",
         "default": "./dist/esm/index.mjs",
         "types": "./dist/types/index.d.ts"
       }
     }
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "bugs": {
     "url": "https://github.com/maeumjs/schema-controller/issues"
   },
@@ -117,9 +110,7 @@
     "type-fest": "^4.20.0"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "cross-env NODE_ENV=production eslint --cache"
-    ],
+    "*.{js,jsx,ts,tsx}": ["cross-env NODE_ENV=production eslint --cache"],
     "*.{js,jsx,ts,tsx},*.json,.{eslintrc.cjs,prettierrc}": [
       "cross-env NODE_ENV=production prettier --ignore-path .eslintignore --parser json --write"
     ]
