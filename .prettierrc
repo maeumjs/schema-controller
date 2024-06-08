@@ -23,7 +23,8 @@
       "files": [
         ".vscode/launch.json",
         ".vscode/settings.json",
-        ".swcrc",
+        "package.json",
+        "tsconfig.dts.json",
         "tsconfig.eslint.json",
         "tsconfig.prod.json",
         "tsconfig.json"
